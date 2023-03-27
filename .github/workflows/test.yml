@@ -25,4 +25,6 @@ jobs:
                   format: 'sarif'
                   output: 'security.sarif'
             - name: Add Security PR Comment
-              uses: shift/sarif-to-markdown-action@main
+              uses: shift/sarif-to-markdown-action@test-pr
+              with:
+                  output: test.md

@@ -2,39 +2,17 @@
 name: 'sarif-to-markdown'
 description: 'Converts SARIF reports to Markdown'
 inputs:
-  filename:
+  input:
     description: |
       Location of the SARIF report
     required: true
     default: 'security.sarif'
+  output:
+    description: |
+      Location of the markdown report
+    required: true
+    default: 'security_report.md'
+
 runs:
-  using: "composite"
-  env:
-    SARIF_FILE: "${{ inputs.filename }}"
-    GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
-    PR_NUMBER: "${{ github.event.number }}"
-  steps:
-    - name: SARIF to Comment
-      run: |
-        OWNER=$(echo $GITHUB_REPOSITORY | cut -d '/' -f 1)
-        REPO=$(echo $GITHUB_REPOSITORY | cut -d '/' -f 2)
-        URL="https://github.com/$REPOSITORY/pull/$PR_NUMBER"
-        echo $URL
-        npm install @security-alert/sarif-to-comment
-        npx @security-alert/sarif-to-comment \
-          --token "${GITHUB_TOKEN}" \
-          --commentUrl "${URL}" \
-          --sarifContentOwner "${OWNER}" \
-          --sarifContentRepo "${REPO}" \
-          --sarifContentBranch "${GITHUB_HEAD_REF}" \
-          --title "Security Scan Results" \
-        "${SARIF_FILE}"
-      shell: bash
-
-
-# GITHUB_TOKEN=xxx npx @security-alert/sarif-to-comment \
-#     --commentUrl "https://github.com/owner/another/issues/1" \
-#     --sarifContentOwner "owner" \
-#     --sarifContentRepo "repo" \
-#     ---sarifContentBranch `git rev-parse HEAD` \
-#     "./codeql_result.sarif"
+  using: "node16"
+  main: "src/action.js"
