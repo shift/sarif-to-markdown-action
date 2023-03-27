@@ -1,0 +1,28 @@
+name: CI
+
+on:
+    pull_request:
+        branches: ["main"]
+
+permissions:
+    contents: read
+    pull-requests: write
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+        strategy:
+            matrix:
+                node-version: [18.x]
+        steps:
+            - name: Trivy Security Scan
+              uses: aquasecurity/trivy-action@master
+              with:
+                  scan-type: 'fs'
+                  scan-ref: '.'
+                  ignore-unfixed: true
+                  severity: 'CRITICAL,HIGH'
+                  format: 'sarif'
+                  output: 'security.sarif'
+            - name: Add Security PR Comment
+              uses: shift/sarif-to-markdown-action@main
